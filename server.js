@@ -4,6 +4,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const multer = require('multer');
 
 dotenv.config();
 
@@ -13,8 +14,35 @@ const DB_PATH = path.join(__dirname, 'db.json');
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Ensure uploads directory exists
+const UPLOADS_DIR = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+// Multer config for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `notif-img-${Date.now()}${ext}`);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  fileFilter: (req, file, cb) => {
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // Initialize Local JSON Database
 function initDb() {
@@ -190,6 +218,31 @@ app.post('/api/admin/send', async (req, res) => {
       totalRemaining: db.subscriptions.length
     }
   });
+});
+
+// 7. Image Upload Endpoint
+app.post('/api/admin/upload-image', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image file provided' });
+  }
+
+  // Return the public URL for the uploaded image
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.json({ success: true, url: imageUrl });
+});
+
+// 8. Delete uploaded image
+app.delete('/api/admin/delete-image', (req, res) => {
+  const { filename } = req.body;
+  if (!filename) return res.status(400).json({ error: 'Filename required' });
+
+  const filePath = path.join(UPLOADS_DIR, path.basename(filename));
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'File not found' });
+  }
 });
 
 // Start Server
