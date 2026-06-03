@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Push Monetization</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Admin Navigation -->
+  <nav class="admin-navbar">
+    <div class="admin-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      PUSH <span>MONETIZATION</span>
+    </div>
+    <div class="nav-links">
+      <a href="#" class="active">Dashboard</a>
+      <a href="/" target="_blank">View Landing Page ↗</a>
+    </div>
+  </nav>
+
+  <!-- Main Content Dashboard -->
+  <main class="admin-content">
+    
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <div class="glass-panel stat-card">
+        <div class="stat-info">
+          <h3>Total Subscribers</h3>
+          <div class="stat-value" id="stat-subscribers">0</div>
+        </div>
+        <div class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="glass-panel stat-card">
+        <div class="stat-info">
+          <h3>Campaigns Dispatched</h3>
+          <div class="stat-value" id="stat-campaigns">0</div>
+        </div>
+        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </div>
+      </div>
+
+      <div class="glass-panel stat-card">
+        <div class="stat-info">
+          <h3>Failed Deliveries</h3>
+          <div class="stat-value" id="stat-failed">0</div>
+        </div>
+        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--error-color);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-section Control Room -->
+    <div class="dashboard-sections">
+      
+      <!-- Left Column: Send Campaign -->
+      <div class="glass-panel" style="padding: 25px;">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 2L11 13"></path>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+          </svg>
+          Compose Push Campaign
+        </h2>
+        
+        <form id="campaign-form">
+          <div class="form-group">
+            <label for="campaign-title">Notification Title*</label>
+            <input type="text" id="campaign-title" class="form-control" placeholder="e.g. 🎁 Congratulations! You Won" required>
+          </div>
+
+          <div class="form-group">
+            <label for="campaign-body">Notification Message Body*</label>
+            <textarea id="campaign-body" class="form-control" placeholder="e.g. Click here to claim your reward immediately. Limited time offer!" required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="campaign-url">Destination Link URL (Defaults to Adsterra Link if blank)</label>
+            <input type="url" id="campaign-url" class="form-control" placeholder="https://example.com/special-link">
+          </div>
+
+          <div class="form-group">
+            <label for="campaign-icon">Notification Icon URL (Square Image)</label>
+            <input type="url" id="campaign-icon" class="form-control" placeholder="https://img.icons8.com/color/96/bell.png">
+          </div>
+
+          <div class="form-group">
+            <label for="campaign-image">Notification Banner Image URL (Optional large image)</label>
+            <input type="url" id="campaign-image" class="form-control" placeholder="https://example.com/banner.jpg">
+          </div>
+
+          <button type="submit" class="btn" id="send-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Send to All Subscribers
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Settings & History -->
+      <div style="display: flex; flex-direction: column; gap: 30px;">
+        
+        <!-- Settings Block -->
+        <div class="glass-panel" style="padding: 25px;">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            Monetization Settings
+          </h2>
+          
+          <form id="settings-form">
+            <div class="form-group">
+              <label for="settings-adsterra">Adsterra Direct Link*</label>
+              <input type="url" id="settings-adsterra" class="form-control" required placeholder="https://landing.adsterra.com/direct/...">
+            </div>
+
+            <div class="form-group">
+              <label for="settings-message">Landing Page Prompts Message</label>
+              <input type="text" id="settings-message" class="form-control" placeholder="Click Allow to verify you are not a robot">
+            </div>
+
+            <div class="toggle-group">
+              <div>
+                <strong style="font-size: 0.9rem; display: block; margin-bottom: 2px;">Redirect on Block</strong>
+                <span style="font-size: 0.75rem; color: var(--text-secondary);">Send traffic to Adsterra even if they deny push.</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="settings-redirect">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-secondary" style="margin-top: 15px;">Save Settings</button>
+          </form>
+        </div>
+
+        <!-- History Block -->
+        <div class="glass-panel" style="padding: 25px;">
+          <h2 class="section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Campaign Logs
+          </h2>
+          
+          <div class="history-list" id="campaign-history">
+            <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px;">No campaigns sent yet.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Dynamic Toast Container -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // Show Status Message (Toast)
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.className = `toast toast-${type} show`;
+      toast.textContent = message;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // Load Stats and Settings
+    async function loadDashboardData() {
+      try {
+        // Fetch stats
+        const statsRes = await fetch('/api/admin/stats');
+        const stats = await statsRes.json();
+        
+        document.getElementById('stat-subscribers').textContent = stats.totalSubscribers;
+        document.getElementById('stat-campaigns').textContent = stats.history.length;
+        
+        let totalFailed = 0;
+        stats.history.forEach(camp => totalFailed += camp.failureCount);
+        document.getElementById('stat-failed').textContent = totalFailed;
+
+        // Render History
+        const historyList = document.getElementById('campaign-history');
+        if (stats.history.length > 0) {
+          historyList.innerHTML = stats.history.map(campaign => `
+            <div class="history-card">
+              <div class="history-header">
+                <span class="history-title">${campaign.title}</span>
+                <span class="history-date">${new Date(campaign.date).toLocaleDateString()}</span>
+              </div>
+              <div class="history-body">${campaign.body}</div>
+              <div class="history-stats">
+                <span class="history-stat stat-success">
+                  ✔ Delivered: ${campaign.successCount}
+                </span>
+                <span class="history-stat stat-failed">
+                  ✖ Failed/Cleaned: ${campaign.failureCount}
+                </span>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          historyList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 20px;">No campaigns sent yet.</p>`;
+        }
+
+        // Fetch settings
+        const settingsRes = await fetch('/api/admin/settings');
+        const settings = await settingsRes.json();
+        
+        document.getElementById('settings-adsterra').value = settings.adsterraLink;
+        document.getElementById('settings-message').value = settings.landingPageMessage;
+        document.getElementById('settings-redirect').checked = settings.redirectOnBlock;
+
+      } catch (err) {
+        showToast("Error loading dashboard data", "error");
+        console.error(err);
+      }
+    }
+
+    // Submit settings changes
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const payload = {
+        adsterraLink: document.getElementById('settings-adsterra').value,
+        landingPageMessage: document.getElementById('settings-message').value,
+        redirectOnBlock: document.getElementById('settings-redirect').checked
+      };
+
+      try {
+        const response = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+          showToast("Settings updated successfully!");
+          loadDashboardData();
+        } else {
+          showToast("Failed to save settings", "error");
+        }
+      } catch (err) {
+        showToast("Network error saving settings", "error");
+        console.error(err);
+      }
+    });
+
+    // Send push campaign
+    document.getElementById('campaign-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const sendBtn = document.getElementById('send-btn');
+      const originalText = sendBtn.innerHTML;
+      
+      // Visual feedback
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Dispatched notification campaign...";
+
+      const payload = {
+        title: document.getElementById('campaign-title').value,
+        body: document.getElementById('campaign-body').value,
+        url: document.getElementById('campaign-url').value,
+        icon: document.getElementById('campaign-icon').value,
+        image: document.getElementById('campaign-image').value
+      };
+
+      try {
+        const response = await fetch('/api/admin/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          showToast(`Sent! Successful: ${result.stats.success}, Failed: ${result.stats.failed}`);
+          document.getElementById('campaign-form').reset();
+          loadDashboardData();
+        } else {
+          showToast(result.error || "Failed to dispatch campaign", "error");
+        }
+      } catch (err) {
+        showToast("Error connecting to notification API", "error");
+        console.error(err);
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = originalText;
+      }
+    });
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', loadDashboardData);
+  </script>
+</body>
+</html>

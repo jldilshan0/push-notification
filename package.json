@@ -1,0 +1,19 @@
+{
+  "name": "adsterra-push-monetization",
+  "version": "1.0.0",
+  "description": "Push notification capture and campaign sender optimized for Adsterra Direct Links",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "web-push": "^3.6.7"
+  }
+}

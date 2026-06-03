@@ -1,0 +1,22 @@
+{
+  "subscriptions": [
+    {
+      "endpoint": "https://fcm.googleapis.com/fcm/send/e51Xsr70uCI:APA91bFS7g0gyomD_Vg-pbZx_fH8fFX6hhBHPXT0nwwtgFvuiYunguPfUBZU0Ff7a8YcEdIFM3no20ftYbD-gSBSuYwwwe0MX1Ugr_B9V-D_X7UIzwWJMy7r6zEvneihIsk7tFzFOIDm",
+      "expirationTime": null,
+      "keys": {
+        "p256dh": "BNWbWjCv3M74bl-bCYR4tjH5Zs40Bda30iRhSGRY6xMU9BsIwEsTcj1NEHSVetfUQ8jT_VgVTmfn4e9XOimvRlI",
+        "auth": "On1yI0OtcoMOZrk_P7cUvw"
+      }
+    }
+  ],
+  "settings": {
+    "adsterraLink": "https://example.com/adsterra-direct-link",
+    "redirectOnBlock": true,
+    "landingPageMessage": "Click Allow to verify you are not a robot"
+  },
+  "vapidKeys": {
+    "publicKey": "BCrz4jC2p1yjWjMMyGHKJqGLGSOyApi2BVeF5E2REvYWTZ6rv2J6AzgbHE-kXXqdsQ2Q7Qw5coH-cGT370YnWgU",
+    "privateKey": "M-0mrTvrk8n0FD8zP2syLFDhWdQGTdrmcrhlD2p9wC4"
+  },
+  "notificationHistory": []
+}

